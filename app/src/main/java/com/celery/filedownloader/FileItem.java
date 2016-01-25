@@ -1,7 +1,9 @@
 package com.celery.filedownloader;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Date;
 
 public class FileItem {
@@ -81,8 +83,8 @@ public class FileItem {
     private URL url;
     private boolean isValid;
 
-    public FileItem(String url) {
-        this.urlString = url;
+    public FileItem(String urlString) {
+        this.urlString = urlString;
         this.lastModifyTimeStamp = new Date().getTime();
 
         validateUrl();
@@ -92,6 +94,17 @@ public class FileItem {
             fileName = urlString.substring(urlString.lastIndexOf('/') + 1, urlString.length());
             fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
             fileExtension = urlString.substring(urlString.lastIndexOf("."));
+
+            //TODO using thread
+            try {
+                URLConnection urlConnection = url.openConnection();
+
+                urlConnection.connect();
+                fileSize = urlConnection.getContentLength();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
         } else {
             fileName = "";
         }

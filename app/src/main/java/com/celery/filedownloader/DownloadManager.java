@@ -13,9 +13,5 @@ public class DownloadManager {
     public DownloadManager() {
         files = new ArrayList<>();
         files.add(new FileItem("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk"));
-        files.add(new FileItem("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk"));
-        files.add(new FileItem("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk"));
-        files.add(new FileItem("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk"));
-        files.add(new FileItem("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk"));
     }
 }
