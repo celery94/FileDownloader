@@ -1,9 +1,14 @@
 package com.celery.filedownloader;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.Date;
 
 public class FileItem {
+
     private String fileName;
+    private String fileExtension;
+    private String fileNameWithoutExtension;
 
     private int fileSize;
 
@@ -13,16 +18,9 @@ public class FileItem {
 
     private long lastModifyTimeStamp;
 
-    private String url;
+    private String urlString;
 
     private boolean selected;
-
-    public FileItem(String url) {
-        this.url = url;
-        this.lastModifyTimeStamp = new Date().getTime();
-        this.fileName = "Test";
-        this.status = "TODO";
-    }
 
     public String getFileName() {
         return fileName;
@@ -72,11 +70,44 @@ public class FileItem {
         return this.selected;
     }
 
-    public String getUrl() {
-        return url;
+    public String getUrlString() {
+        return urlString;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public void setUrlString(String urlString) {
+        this.urlString = urlString;
+    }
+
+    private URL url;
+    private boolean isValid;
+
+    public FileItem(String url) {
+        this.urlString = url;
+        this.lastModifyTimeStamp = new Date().getTime();
+
+        validateUrl();
+
+        if (isValid) {
+            //TODO check the url endwith param ? &
+            fileName = urlString.substring(urlString.lastIndexOf('/') + 1, urlString.length());
+            fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
+            fileExtension = urlString.substring(urlString.lastIndexOf("."));
+        } else {
+            fileName = "";
+        }
+    }
+
+    public boolean IsValid() {
+        return isValid;
+    }
+
+    private void validateUrl() {
+        try {
+            url = new URL(urlString);
+            isValid = true;
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+            isValid = false;
+        }
     }
 }

@@ -5,7 +5,6 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.text.DecimalFormat;
@@ -118,7 +117,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         for (int i = 0; i < selectedItems.size(); i++) {
             int position = selectedItems.keyAt(i);
 
-            urls += list.get(position).getUrl() + ",";
+            urls += list.get(position).getUrlString() + ",";
 
         }
         return urls.substring(0, urls.length() - 1);
@@ -231,7 +230,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         }
 
         private String getTimeString(long timeStamp) {
-            SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+            SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
             String string = dateFormat.format(new Date(timeStamp));
 
             return string;
