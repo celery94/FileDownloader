@@ -1,17 +1,28 @@
 package com.celery.filedownloader;
 
+import java.util.Date;
+
 public class FileItem {
-    private long fileDownloadId;
     private String fileName;
+
     private int fileSize;
+
     private int fileSizeTotal;
+
     private String status;
+
     private long lastModifyTimeStamp;
 
-    private String uriString;
-    private String urlDownload;
+    private String url;
 
     private boolean selected;
+
+    public FileItem(String url) {
+        this.url = url;
+        this.lastModifyTimeStamp = new Date().getTime();
+        this.fileName = "Test";
+        this.status = "TODO";
+    }
 
     public String getFileName() {
         return fileName;
@@ -27,14 +38,6 @@ public class FileItem {
 
     public void setFileSize(int fileSize) {
         this.fileSize = fileSize;
-    }
-
-    public void setFileDownloadId(long fileDownloadId) {
-        this.fileDownloadId = fileDownloadId;
-    }
-
-    public long getFileDownloadId() {
-        return fileDownloadId;
     }
 
     public String getStatus() {
@@ -61,14 +64,6 @@ public class FileItem {
         return lastModifyTimeStamp;
     }
 
-    public String getUriString() {
-        return uriString;
-    }
-
-    public void setUriString(String uriString) {
-        this.uriString = uriString;
-    }
-
     public void setSelected(boolean selected) {
         this.selected = selected;
     }
@@ -77,11 +72,11 @@ public class FileItem {
         return this.selected;
     }
 
-    public String getUrlDownload() {
-        return urlDownload;
+    public String getUrl() {
+        return url;
     }
 
-    public void setUrlDownload(String urlDownload) {
-        this.urlDownload = urlDownload;
+    public void setUrl(String url) {
+        this.url = url;
     }
 }

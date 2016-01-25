@@ -1,6 +1,5 @@
 package com.celery.filedownloader;
 
-import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -8,10 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -122,7 +118,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         for (int i = 0; i < selectedItems.size(); i++) {
             int position = selectedItems.keyAt(i);
 
-            urls += list.get(position).getUrlDownload() + ",";
+            urls += list.get(position).getUrl() + ",";
 
         }
         return urls.substring(0, urls.length() - 1);
@@ -133,7 +129,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         private TextView tvFileSize;
         private TextView tvCreateTime;
         private TextView tvStatus;
-        private ImageView ivIcon;
+        //private ImageView ivIcon;
         private FileItem mItem;
 
         public ViewHolder(View itemView) {
@@ -143,7 +139,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
             tvFileSize = (TextView) itemView.findViewById(R.id.tvFileSize);
             tvCreateTime = (TextView) itemView.findViewById(R.id.tvCreateTime);
             tvStatus = (TextView) itemView.findViewById(R.id.tvStatus);
-            ivIcon = (ImageView) itemView.findViewById(R.id.ivIcon);
+            //ivIcon = (ImageView) itemView.findViewById(R.id.ivIcon);
 
             itemView.setOnClickListener(this);
             itemView.setLongClickable(true);
