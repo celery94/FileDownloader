@@ -7,10 +7,12 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -19,7 +21,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class AddFileDialog extends DialogFragment {
+public class AddFileDialog extends DialogFragment implements TextView.OnEditorActionListener {
     private EditText etUrl;
     private TextView tvFileSize;
 
@@ -52,25 +54,7 @@ public class AddFileDialog extends DialogFragment {
         etUrl = (EditText) view.findViewById(R.id.etUrl);
         etUrl.requestFocus();
 
-        etUrl.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-//                UrlChangeListener listener = (UrlChangeListener) getActivity();
-//                listener.onUrlChange(s.toString());
-
-                new HttpTask().execute(s.toString());
-            }
-        });
+        etUrl.setOnEditorActionListener(this);
 
         tvFileSize = (TextView) view.findViewById(R.id.tvFileSize);
 
@@ -82,6 +66,15 @@ public class AddFileDialog extends DialogFragment {
         super.onStart();
 
         getDialog().getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
+    }
+
+    @Override
+    public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+        if (i == EditorInfo.IME_ACTION_DONE) {
+            new HttpTask().execute(etUrl.getText().toString());
+            return true;
+        }
+        return false;
     }
 
     public interface UrlChangeListener {
