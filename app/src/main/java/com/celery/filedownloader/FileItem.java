@@ -112,4 +112,8 @@ public class FileItem {
             isValid = false;
         }
     }
+
+    public URL getUrl() {
+        return url;
+    }
 }

@@ -79,6 +79,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             }
         });
 
+        etUrl.setText("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk");
         String urlStr = etUrl.getText().toString();
         if (urlStr != "") {
             getFileItem(urlStr);
@@ -88,14 +89,12 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
     @Override
     public void onStart() {
         super.onStart();
-        System.out.println("onStart");
 
         getDialog().getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
     }
 
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
-        System.out.println("onEditorAction:");
         if (i == EditorInfo.IME_ACTION_DONE) {
             getFileItem(etUrl.getText().toString());
         }
@@ -123,18 +122,13 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
 
         @Override
         protected void onPostExecute(String s) {
-            System.out.println("onPostExecute:" + s);
             tvFileSize.setText("(Size: " + s + ")");
         }
 
         private String getFileSize(String urlStr) {
             try {
-                System.out.println("getFileSize:" + urlStr);
                 URL url = new URL(urlStr);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                connection.setReadTimeout(10000 /* milliseconds */);
-                connection.setConnectTimeout(15000 /* milliseconds */);
-                connection.setRequestMethod("GET");
                 connection.connect();
 
                 String fileSize;
@@ -149,7 +143,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
                         fileSize = String.valueOf(mb) + "M";
                     }
                 }
-                System.out.println("getFileSize result:" + fileSize);
+                System.out.println("get file(" + urlStr + ") size result:" + fileSize);
                 return fileSize;
 
             } catch (MalformedURLException e) {
