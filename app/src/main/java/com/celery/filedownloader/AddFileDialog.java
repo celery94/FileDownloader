@@ -1,12 +1,7 @@
 package com.celery.filedownloader;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
@@ -83,11 +78,17 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
                 }
             }
         });
+
+        String urlStr = etUrl.getText().toString();
+        if (urlStr != "") {
+            getFileItem(urlStr);
+        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
+        System.out.println("onStart");
 
         getDialog().getWindow().setLayout(WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.WRAP_CONTENT);
     }
@@ -96,13 +97,17 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
         System.out.println("onEditorAction:");
         if (i == EditorInfo.IME_ACTION_DONE) {
-            fileItem = new FileItem(etUrl.getText().toString());
-            if (fileItem.IsValid()) {
-                new HttpTask().execute(etUrl.getText().toString());
-                etAddFileName.setText(fileItem.getFileName());
-            }
+            getFileItem(etUrl.getText().toString());
         }
         return false;
+    }
+
+    private void getFileItem(String urlStr) {
+        fileItem = new FileItem(urlStr);
+        if (fileItem.IsValid()) {
+            new HttpTask().execute(urlStr);
+            etAddFileName.setText(fileItem.getFileName());
+        }
     }
 
     public interface AddClickListener {
