@@ -104,8 +104,9 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
     private void getFileItem(String urlStr) {
         fileItem = new FileItem(urlStr);
         if (fileItem.IsValid()) {
-            new HttpTask().execute(urlStr);
             etAddFileName.setText(fileItem.getFileName());
+
+            new HttpTask().execute(fileItem);
         }
     }
 
@@ -113,11 +114,15 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
         void onAddClick(FileItem fileItem);
     }
 
-    private class HttpTask extends AsyncTask<String, Void, String> {
+    private class HttpTask extends AsyncTask<FileItem, Void, String> {
 
         @Override
-        protected String doInBackground(String... params) {
-            return getFileSize(params[0]);
+        protected String doInBackground(FileItem... params) {
+            FileItem fileItem = params[0];
+            int fileSize = getFileSize(fileItem.getUrl());
+            fileItem.setFileSize(fileSize);
+
+            return fileItem.getFileSize();
         }
 
         @Override
@@ -125,26 +130,15 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             tvFileSize.setText("(Size: " + s + ")");
         }
 
-        private String getFileSize(String urlStr) {
+        private int getFileSize(URL url) {
             try {
-                URL url = new URL(urlStr);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.connect();
 
-                String fileSize;
                 int contentLength = connection.getContentLength();
-                if (contentLength == -1) {
-                    fileSize = "Unknown";
-                } else {
-                    int mb = contentLength / 1024 / 1024;
-                    if (mb == 0) {
-                        fileSize = String.valueOf(contentLength / 1024) + "K";
-                    } else {
-                        fileSize = String.valueOf(mb) + "M";
-                    }
-                }
-                System.out.println("get file(" + urlStr + ") size result:" + fileSize);
-                return fileSize;
+
+                System.out.println("get file(" + url.getPath() + ") size result:" + contentLength);
+                return contentLength;
 
             } catch (MalformedURLException e) {
                 e.printStackTrace();
@@ -154,7 +148,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
                 e.printStackTrace();
             }
 
-            return "";
+            return -1;
         }
     }
 }

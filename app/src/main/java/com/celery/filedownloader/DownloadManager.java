@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DownloadManager {
@@ -38,6 +39,8 @@ public class DownloadManager {
     }
 
     public void addFileItem(FileItem item) {
+        item.setLastModifyTimeStamp(new Date().getTime());
+
         files.add(item);
 
         new DownloadTask().execute(item);
@@ -49,13 +52,13 @@ public class DownloadManager {
         protected Integer doInBackground(FileItem... params) {
             System.out.println("DownloadTask doInBackground");
 
+            FileItem fileItem = params[0];
             InputStream inputStream = null;
             OutputStream outputStream = null;
             HttpURLConnection conn = null;
             long total = 0;
 
             try {
-                FileItem fileItem = params[0];
 
                 URL url = fileItem.getUrl();
                 conn = (HttpURLConnection) url.openConnection();
@@ -72,7 +75,7 @@ public class DownloadManager {
                     dir.mkdir();
                 }
 
-                File file = new File(DL_DIR + fileItem.getFileName());
+                File file = new File(DL_DIR + fileItem.getFileName());  //TODO check file exist
                 Log.d("", "File download start: " + file.getPath());
                 file.createNewFile();
 
@@ -84,11 +87,12 @@ public class DownloadManager {
 
                     outputStream.write(buffer, 0, count);
                 }
-                Log.d("", "File download complete, size: " + String.valueOf(total / 1024) + " k");
 
-                return (int) total;
+                Log.d("", "File download complete, size: " + String.valueOf(total / 1024) + " k");
+                fileItem.setStatus(FileItem.STATUS_COMPLETE);
             } catch (Exception e) {
                 e.printStackTrace();
+                fileItem.setStatus(FileItem.STATUS_ERROR);
             } finally {
                 try {
                     if (outputStream != null) {
@@ -104,7 +108,7 @@ public class DownloadManager {
                     conn.disconnect();
             }
 
-            return (int) total;
+            return fileItem.getStatus();
         }
 
         @Override
@@ -114,8 +118,7 @@ public class DownloadManager {
 
         @Override
         protected void onPostExecute(Integer i) {
-            System.out.println("Downloaded: " + i);
-            super.onPostExecute(i);
+            System.out.println("Downloaded and result status: " + i);
         }
     }
 }

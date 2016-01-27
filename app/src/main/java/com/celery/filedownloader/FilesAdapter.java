@@ -67,7 +67,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
 
             tvFileName.setText(item.getFileName());
             //tvStatus.setText(item.getStatus());
-            //tvFileSize.setText(item.getFileSize());
+            tvFileSize.setText(item.getFileSize());
             //tvCreateTime.setText(getTimeString(item.getLastModifyTimeStamp()));
 //            if (mItem.getSelected()) {
 //                ivIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_check_grey600));
