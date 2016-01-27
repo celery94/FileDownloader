@@ -1,13 +1,7 @@
 package com.celery.filedownloader;
 
-import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -17,12 +11,7 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-public class MainActivity extends AppCompatActivity implements AddFileDialog.UrlChangeListener {
+public class MainActivity extends AppCompatActivity implements AddFileDialog.AddClickListener {
     RecyclerView recyclerView;
     LinearLayoutManager linearLayoutManager;
     FilesAdapter filesAdapter;
@@ -40,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Url
             @Override
             public void onClick(View view) {
                 FragmentManager fm = getSupportFragmentManager();
-                AddFileDialog addFileDialog = AddFileDialog.newInstance("File Url");
+                AddFileDialog addFileDialog = AddFileDialog.newInstance();
                 addFileDialog.show(fm, "fragment_add_file");
             }
         });
@@ -50,9 +39,7 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Url
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        DownloadManager downloadManager = new DownloadManager();
-        filesAdapter = new FilesAdapter(downloadManager.getFiles());
-
+        filesAdapter = new FilesAdapter();
         recyclerView.setAdapter(filesAdapter);
     }
 
@@ -79,17 +66,8 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Url
     }
 
     @Override
-    public void onUrlChange(String inputText) {
-        FileItem fileItem = new FileItem(inputText);
-        if (fileItem.IsValid()) {
-            //TODO check WIFI
-            ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            if (networkInfo != null && networkInfo.isConnected()) {
-                // fetch data
-            }
-        }
+    public void onAddClick(FileItem fileItem) {
+        DownloadManager.getInstance().addFileItem(fileItem);
+        filesAdapter.notifyDataSetChanged();
     }
-
-
 }

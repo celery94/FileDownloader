@@ -6,12 +6,25 @@ import java.util.List;
 public class DownloadManager {
     private List<FileItem> files;
 
+    private static DownloadManager instance = null;
+
     public List<FileItem> getFiles() {
         return files;
     }
 
-    public DownloadManager() {
+    private DownloadManager() {
         files = new ArrayList<>();
-        //files.add(new FileItem("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk"));
+    }
+
+    public static DownloadManager getInstance() {
+        if (instance == null) {
+            instance = new DownloadManager();
+        }
+
+        return instance;
+    }
+
+    public void addFileItem(FileItem item) {
+        files.add(item);
     }
 }

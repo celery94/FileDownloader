@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -27,17 +28,17 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
     private EditText etUrl;
     private EditText etAddFileName;
     private TextView tvFileSize;
+    private Button btnCancel;
+    private Button btnAdd;
+
+    private FileItem fileItem;
 
     public AddFileDialog() {
 
     }
 
-    public static AddFileDialog newInstance(String title) {
+    public static AddFileDialog newInstance() {
         AddFileDialog addFileDialog = new AddFileDialog();
-        Bundle args = new Bundle();
-        args.putString("title", title);
-        addFileDialog.setArguments(args);
-
         return addFileDialog;
     }
 
@@ -45,6 +46,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         System.out.println("onCreateView");
+
         return inflater.inflate(R.layout.fragment_add_file, container);
     }
 
@@ -56,9 +58,31 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
         etUrl = (EditText) view.findViewById(R.id.etUrl);
         etAddFileName = (EditText) view.findViewById(R.id.etAddFileName);
         tvFileSize = (TextView) view.findViewById(R.id.tvFileSize);
+        btnCancel = (Button) view.findViewById(R.id.btnCancel);
+        btnAdd = (Button) view.findViewById(R.id.btnAdd);
 
         etUrl.requestFocus();
         etUrl.setOnEditorActionListener(this);
+
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dismiss();
+            }
+        });
+
+        btnAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                System.out.println("btn add click");
+
+                if (fileItem != null && fileItem.IsValid()) {
+                    AddClickListener clickListener = (AddClickListener) getActivity();
+                    clickListener.onAddClick(fileItem);
+                    dismiss();
+                }
+            }
+        });
     }
 
     @Override
@@ -72,8 +96,8 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
         System.out.println("onEditorAction:");
         if (i == EditorInfo.IME_ACTION_DONE) {
-            FileItem fileItem = new FileItem(etUrl.getText().toString());
-            if(fileItem.IsValid()){
+            fileItem = new FileItem(etUrl.getText().toString());
+            if (fileItem.IsValid()) {
                 new HttpTask().execute(etUrl.getText().toString());
                 etAddFileName.setText(fileItem.getFileName());
             }
@@ -81,8 +105,8 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
         return false;
     }
 
-    public interface UrlChangeListener {
-        void onUrlChange(String inputText);
+    public interface AddClickListener {
+        void onAddClick(FileItem fileItem);
     }
 
     private class HttpTask extends AsyncTask<String, Void, String> {
@@ -120,7 +144,6 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
                         fileSize = String.valueOf(mb) + "M";
                     }
                 }
-
                 System.out.println("getFileSize result:" + fileSize);
                 return fileSize;
 
