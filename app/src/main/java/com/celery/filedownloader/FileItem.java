@@ -94,17 +94,6 @@ public class FileItem {
             fileName = urlString.substring(urlString.lastIndexOf('/') + 1, urlString.length());
             fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
             fileExtension = urlString.substring(urlString.lastIndexOf("."));
-
-            //TODO using thread
-//            try {
-//                URLConnection urlConnection = url.openConnection();
-//
-//                urlConnection.connect();
-//                fileSize = urlConnection.getContentLength();
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-
         } else {
             fileName = "";
         }

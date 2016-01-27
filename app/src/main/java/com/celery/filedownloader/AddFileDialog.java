@@ -1,12 +1,14 @@
 package com.celery.filedownloader;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.StrictMode;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,6 +25,7 @@ import java.net.URL;
 
 public class AddFileDialog extends DialogFragment implements TextView.OnEditorActionListener {
     private EditText etUrl;
+    private EditText etAddFileName;
     private TextView tvFileSize;
 
     public AddFileDialog() {
@@ -41,24 +44,21 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        System.out.println("onCreateView");
         return inflater.inflate(R.layout.fragment_add_file, container);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
-        StrictMode.setThreadPolicy(policy);
+        System.out.println("onViewCreated");
 
         etUrl = (EditText) view.findViewById(R.id.etUrl);
-        etUrl.requestFocus();
-
-        etUrl.setOnEditorActionListener(this);
-
+        etAddFileName = (EditText) view.findViewById(R.id.etAddFileName);
         tvFileSize = (TextView) view.findViewById(R.id.tvFileSize);
 
-        getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+        etUrl.requestFocus();
+        etUrl.setOnEditorActionListener(this);
     }
 
     @Override
@@ -70,9 +70,13 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
 
     @Override
     public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+        System.out.println("onEditorAction:");
         if (i == EditorInfo.IME_ACTION_DONE) {
-            new HttpTask().execute(etUrl.getText().toString());
-            return true;
+            FileItem fileItem = new FileItem(etUrl.getText().toString());
+            if(fileItem.IsValid()){
+                new HttpTask().execute(etUrl.getText().toString());
+                etAddFileName.setText(fileItem.getFileName());
+            }
         }
         return false;
     }
@@ -91,7 +95,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
         @Override
         protected void onPostExecute(String s) {
             System.out.println("onPostExecute:" + s);
-            tvFileSize.setText(s);
+            tvFileSize.setText("(Size: " + s + ")");
         }
 
         private String getFileSize(String urlStr) {
@@ -104,7 +108,19 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
                 connection.setRequestMethod("GET");
                 connection.connect();
 
-                String fileSize = String.valueOf(connection.getContentLength());
+                String fileSize;
+                int contentLength = connection.getContentLength();
+                if (contentLength == -1) {
+                    fileSize = "Unknown";
+                } else {
+                    int mb = contentLength / 1024 / 1024;
+                    if (mb == 0) {
+                        fileSize = String.valueOf(contentLength / 1024) + "K";
+                    } else {
+                        fileSize = String.valueOf(mb) + "M";
+                    }
+                }
+
                 System.out.println("getFileSize result:" + fileSize);
                 return fileSize;
 
