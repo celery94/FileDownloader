@@ -62,6 +62,9 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
                 total += count;
 
                 outputStream.write(buffer, 0, count);
+
+                fileItem.setFileSizeDownload(total);
+                publishProgress(position);
             }
 
             Log.d("", "File download complete, size: " + String.valueOf(total / 1024) + " k");
@@ -96,7 +99,7 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
 
     @Override
     protected void onProgressUpdate(Integer... values) {
-        super.onProgressUpdate(values);
+        filesAdapter.notifyItemChanged(values[0]);
     }
 
     @Override
