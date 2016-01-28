@@ -50,7 +50,6 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         private TextView tvCreateTime;
         private TextView tvStatus;
         private ImageView ivIcon;
-        //private FileItem mItem;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -63,12 +62,10 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
         }
 
         public void bindFileItem(FileItem item) {
-            //mItem = item;
-
             tvFileName.setText(item.getFileName());
-            //tvStatus.setText(item.getStatus());
+            tvStatus.setText(item.getStatus());
             tvFileSize.setText(item.getFileSize());
-            //tvCreateTime.setText(getTimeString(item.getLastModifyTimeStamp()));
+            tvCreateTime.setText(item.getLastModifyTimeStamp());
 //            if (mItem.getSelected()) {
 //                ivIcon.setImageDrawable(getResources().getDrawable(R.drawable.ic_check_grey600));
 //            } else {

@@ -2,6 +2,7 @@ package com.celery.filedownloader;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class FileItem {
@@ -14,7 +15,8 @@ public class FileItem {
     private String fileExtension;
     private String fileNameWithoutExtension;
 
-    private int fileSize;
+    private long fileSize;
+    private long fileSizeDownload;
 
     private int status;
 
@@ -28,28 +30,41 @@ public class FileItem {
 
     public String getFileSize() {
         if (fileSize == -1) {
-            return "Unknown";
+            return "Unknown" + "/" + formatSize(fileSizeDownload);
         } else {
-            int kb = fileSize / 1024;
-            if (kb == 0) {
-                return String.valueOf(fileSize) + "b";
+            return formatSize(fileSize) + "/" + formatSize(fileSizeDownload);
+        }
+    }
+
+    private String formatSize(long size) {
+        long kb = size / 1024;
+        if (kb == 0) {
+            return String.valueOf(size) + "b";
+        } else {
+            long mb = kb / 1024;
+            if (mb == 0) {
+                return String.valueOf(kb) + "K";
             } else {
-                int mb = kb / 1024;
-                if (mb == 0) {
-                    return String.valueOf(kb) + "K";
-                } else {
-                    return String.valueOf(mb) + "M";
-                }
+                return String.valueOf(mb) + "M";
             }
         }
     }
 
-    public void setFileSize(int fileSize) {
+    public void setFileSize(long fileSize) {
         this.fileSize = fileSize;
     }
 
-    public int getStatus() {
-        return status;
+    public String getStatus() {
+        switch (status) {
+            case STATUS_ERROR:
+                return "Error";
+            case STATUS_STARTED:
+                return "Started";
+            case STATUS_COMPLETE:
+                return "Completed";
+            default:
+                return "";
+        }
     }
 
     public void setStatus(int status) {
@@ -60,8 +75,11 @@ public class FileItem {
         this.lastModifyTimeStamp = lastModifyTimeStamp;
     }
 
-    public long getLastModifyTimeStamp() {
-        return lastModifyTimeStamp;
+    public String getLastModifyTimeStamp() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
+        String string = dateFormat.format(new Date(lastModifyTimeStamp));
+
+        return string;
     }
 
     private URL url;
@@ -99,5 +117,9 @@ public class FileItem {
 
     public URL getUrl() {
         return url;
+    }
+
+    public void setFileSizeDownload(long fileSizeDownload) {
+        this.fileSizeDownload = fileSizeDownload;
     }
 }
