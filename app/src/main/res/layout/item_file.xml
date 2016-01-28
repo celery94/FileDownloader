@@ -37,21 +37,18 @@
                 <TextView
                     android:id="@+id/tvCreateTime"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="60dp"
                     android:textSize="10sp" />
 
                 <TextView
                     android:id="@+id/tvFileSize"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_width="wrap_content"
+                    android:layout_width="140dp"
                     android:textSize="10sp" />
 
                 <TextView
                     android:id="@+id/tvStatus"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_width="wrap_content"
                     android:textSize="10sp" />
             </LinearLayout>

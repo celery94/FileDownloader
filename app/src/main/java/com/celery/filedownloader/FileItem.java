@@ -30,6 +30,14 @@ public class FileItem {
 
     public String getFileSize() {
         if (fileSize == -1) {
+            return "Unknown";
+        } else {
+            return formatSize(fileSize);
+        }
+    }
+
+    public String getFileSizeDownload() {
+        if (fileSize == -1) {
             return "Unknown" + "/" + formatSize(fileSizeDownload);
         } else {
             return formatSize(fileSize) + "/" + formatSize(fileSizeDownload);
@@ -45,7 +53,7 @@ public class FileItem {
             if (mb == 0) {
                 return String.valueOf(kb) + "K";
             } else {
-                return String.valueOf(mb) + "M";
+                return String.valueOf(mb) + "M " + String.valueOf(kb % 1024) + "K";
             }
         }
     }
