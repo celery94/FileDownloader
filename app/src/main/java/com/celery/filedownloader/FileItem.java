@@ -1,5 +1,6 @@
 package com.celery.filedownloader;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -16,15 +17,12 @@ public class FileItem {
     private String fileName;
     private String fileExtension;
     private String fileNameWithoutExtension;
-
     private long fileSize;
     private long fileSizeDownload;
-
     private int status;
-
     private long lastModifyTimeStamp;
-
     private String urlString;
+    private File file;
 
     public String getFileName() {
         return fileName;
@@ -33,7 +31,7 @@ public class FileItem {
     public String getFileSize() {
         if (fileSize == -1) {
             return "Unknown";
-        } else if (fileSize == -2) {
+        } else if (fileSize == -2) {    //means url incorrect
             return "";
         } else {
             return formatSize(fileSize);
@@ -114,6 +112,15 @@ public class FileItem {
             fileName = urlString.substring(urlString.lastIndexOf('/') + 1, urlString.length());
             fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
             fileExtension = urlString.substring(urlString.lastIndexOf("."));
+            file = new File(DownloadManager.DL_DIR, fileName);
+
+            if (file.exists()) {
+                setFileSize(file.length());
+                setFileSizeDownload(file.length());
+                setStatus(STATUS_COMPLETE);
+            } else {
+                setStatus(STATUS_REMOVED);
+            }
         } else {
             fileName = "";
         }
@@ -143,5 +150,9 @@ public class FileItem {
 
     public void setFileSizeDownload(long fileSizeDownload) {
         this.fileSizeDownload = fileSizeDownload;
+    }
+
+    public boolean exists(){
+        return file.exists();
     }
 }

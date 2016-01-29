@@ -42,17 +42,6 @@ public class DownloadManager {
 
                 FileItem fileItem = new FileItem(urlString);
 
-                String localUrl = DL_DIR + fileItem.getFileName();
-                File file = new File(localUrl);
-                if (file.exists()) {
-                    fileItem.setFileSize(file.length());
-                    fileItem.setFileSizeDownload(file.length());
-                    fileItem.setStatus(FileItem.STATUS_COMPLETE);
-                    fileItem.setLastModifyTimeStamp(file.lastModified());
-                } else {
-                    fileItem.setStatus(FileItem.STATUS_REMOVED);
-                }
-
                 files.add(fileItem);
             }
         }

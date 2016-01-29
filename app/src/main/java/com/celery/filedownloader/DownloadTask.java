@@ -26,7 +26,7 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
         System.out.println("DownloadTask doInBackground");
 
         FileItem fileItem = params[0];
-
+        fileItem.setStatus(FileItem.STATUS_STARTED);
         int position = downloadManager.addFileItem(fileItem);
 
         InputStream inputStream = null;

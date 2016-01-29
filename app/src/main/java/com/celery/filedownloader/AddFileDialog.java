@@ -71,7 +71,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             public void onClick(View v) {
                 System.out.println("btn add click");
 
-                if (fileItem != null && fileItem.IsValid() && fileItem.getFileSize() != "0") {
+                if (fileItem != null && fileItem.IsValid() && !fileItem.exists() && fileItem.getFileSize() != "0") {
                     AddClickListener clickListener = (AddClickListener) getActivity();
                     clickListener.onAddClick(fileItem);
                     dismiss();
@@ -104,9 +104,14 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
     private void getFileItem(String urlStr) {
         fileItem = new FileItem(urlStr);
         if (fileItem.IsValid()) {
+
             etAddFileName.setText(fileItem.getFileName());
 
-            new HttpTask().execute(fileItem);
+            if (fileItem.exists()) {
+                tvFileSize.setText("(File already exist.)");
+            } else {
+                new HttpTask().execute(fileItem);
+            }
         }
     }
 
