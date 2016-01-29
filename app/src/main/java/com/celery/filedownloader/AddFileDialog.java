@@ -71,7 +71,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             public void onClick(View v) {
                 System.out.println("btn add click");
 
-                if (fileItem != null && fileItem.IsValid()) {
+                if (fileItem != null && fileItem.IsValid() && fileItem.getFileSize() != "0") {
                     AddClickListener clickListener = (AddClickListener) getActivity();
                     clickListener.onAddClick(fileItem);
                     dismiss();
@@ -127,7 +127,11 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
 
         @Override
         protected void onPostExecute(String s) {
-            tvFileSize.setText("(Size: " + s + ")");
+            if (s == "0") {
+                tvFileSize.setText("(Unable to resolve this url.)");
+            } else {
+                tvFileSize.setText("(Size: " + s + ")");
+            }
         }
 
         private int getFileSize(URL url) {
@@ -148,7 +152,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
                 e.printStackTrace();
             }
 
-            return -1;
+            return 0;
         }
     }
 }

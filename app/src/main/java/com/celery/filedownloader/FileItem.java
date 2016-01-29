@@ -31,6 +31,8 @@ public class FileItem {
     public String getFileSize() {
         if (fileSize == -1) {
             return "Unknown";
+        } else if (fileSize == 0) {
+            return "0";
         } else {
             return formatSize(fileSize);
         }
