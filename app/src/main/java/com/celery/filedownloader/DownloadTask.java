@@ -1,7 +1,6 @@
 package com.celery.filedownloader;
 
 import android.os.AsyncTask;
-import android.os.Environment;
 import android.util.Log;
 
 import java.io.File;
@@ -13,12 +12,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
-    private static final String DL_DIR = Environment.getExternalStorageDirectory() + "/Download/";
 
     private FilesAdapter filesAdapter;
+    private DownloadManager downloadManager;
 
-    public DownloadTask(FilesAdapter filesAdapter) {
+    public DownloadTask(FilesAdapter filesAdapter,DownloadManager downloadManager) {
         this.filesAdapter = filesAdapter;
+        this.downloadManager = downloadManager;
     }
 
     @Override
@@ -27,7 +27,7 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
 
         FileItem fileItem = params[0];
 
-        int position = DownloadManager.getInstance().addFileItem(fileItem);
+        int position = downloadManager.addFileItem(fileItem);
 
         InputStream inputStream = null;
         OutputStream outputStream = null;
@@ -46,12 +46,12 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
 
             inputStream = conn.getInputStream();
 
-            File dir = new File(DL_DIR);
+            File dir = new File(DownloadManager.DL_DIR);
             if (!dir.exists()) {
                 dir.mkdir();
             }
 
-            File file = new File(DL_DIR + fileItem.getFileName());  //TODO check file exist
+            File file = new File(DownloadManager.DL_DIR + fileItem.getFileName());  //TODO check file exist
             Log.d("", "File download start: " + file.getPath());
             file.createNewFile();
 

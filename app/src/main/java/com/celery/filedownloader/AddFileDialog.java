@@ -119,6 +119,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
         @Override
         protected String doInBackground(FileItem... params) {
             FileItem fileItem = params[0];
+
             int fileSize = getFileSize(fileItem.getUrl());
             fileItem.setFileSize(fileSize);
 
@@ -127,7 +128,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
 
         @Override
         protected void onPostExecute(String s) {
-            if (s == "0") {
+            if (s == "") {
                 tvFileSize.setText("(Unable to resolve this url.)");
             } else {
                 tvFileSize.setText("(Size: " + s + ")");
@@ -152,7 +153,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
                 e.printStackTrace();
             }
 
-            return 0;
+            return -2;
         }
     }
 }

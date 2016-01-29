@@ -10,6 +10,8 @@ public class FileItem {
     public static final int STATUS_ERROR = -1;
     public static final int STATUS_STARTED = 0;
     public static final int STATUS_COMPLETE = 1;
+    public static final int STATUS_PENDING = 2;
+    public static final int STATUS_REMOVED = 3;
 
     private String fileName;
     private String fileExtension;
@@ -31,8 +33,8 @@ public class FileItem {
     public String getFileSize() {
         if (fileSize == -1) {
             return "Unknown";
-        } else if (fileSize == 0) {
-            return "0";
+        } else if (fileSize == -2) {
+            return "";
         } else {
             return formatSize(fileSize);
         }
@@ -40,7 +42,9 @@ public class FileItem {
 
     public String getFileSizeDownload() {
         if (fileSize == -1) {
-            return "Unknown" + "/" + formatSize(fileSizeDownload);
+            return formatSize(fileSizeDownload);
+        } else if (fileSize == fileSizeDownload) {
+            return formatSize(fileSize);
         } else {
             return formatSize(fileSize) + "/" + formatSize(fileSizeDownload);
         }
@@ -72,6 +76,10 @@ public class FileItem {
                 return "Started";
             case STATUS_COMPLETE:
                 return "Completed";
+            case STATUS_PENDING:
+                return "Pending";
+            case STATUS_REMOVED:
+                return "Removed";
             default:
                 return "";
         }
@@ -127,6 +135,10 @@ public class FileItem {
 
     public URL getUrl() {
         return url;
+    }
+
+    public String getUrlString() {
+        return urlString;
     }
 
     public void setFileSizeDownload(long fileSizeDownload) {

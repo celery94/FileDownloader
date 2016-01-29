@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Add
     RecyclerView recyclerView;
     LinearLayoutManager linearLayoutManager;
     FilesAdapter filesAdapter;
+    DownloadManager downloadManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +40,9 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Add
         linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
 
-        filesAdapter = new FilesAdapter();
+        downloadManager = new DownloadManager(this);
+
+        filesAdapter = new FilesAdapter(downloadManager);
         recyclerView.setAdapter(filesAdapter);
     }
 
@@ -58,7 +61,9 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Add
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_clear) {
+            downloadManager.clearList();
+            filesAdapter.notifyDataSetChanged();
             return true;
         }
 
@@ -67,6 +72,6 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Add
 
     @Override
     public void onAddClick(FileItem fileItem) {
-        new DownloadTask(filesAdapter).execute(fileItem);
+        new DownloadTask(filesAdapter, downloadManager).execute(fileItem);
     }
 }

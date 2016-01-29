@@ -1,5 +1,6 @@
 package com.celery.filedownloader;
 
+import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -18,8 +19,8 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
 
     private DownloadManager downloadManager;
 
-    public FilesAdapter() {
-        downloadManager = DownloadManager.getInstance();
+    public FilesAdapter(DownloadManager downloadManager) {
+        this.downloadManager = downloadManager;
     }
 
     @Override
