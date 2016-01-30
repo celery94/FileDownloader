@@ -107,11 +107,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
 
             etAddFileName.setText(fileItem.getFileName());
 
-            //if (fileItem.exists()) {
-            //    tvFileSize.setText("(File already exist.)");
-            //} else {
             new HttpTask().execute(fileItem);
-            //}
         }
     }
 
