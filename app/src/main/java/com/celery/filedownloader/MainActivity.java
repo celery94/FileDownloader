@@ -1,6 +1,10 @@
 package com.celery.filedownloader;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
@@ -44,6 +48,26 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Add
 
         filesAdapter = new FilesAdapter(downloadManager);
         recyclerView.setAdapter(filesAdapter);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if ((checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+                requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, REQUEST_CODE_WRITE_SETTINGS);
+            }
+        }
+    }
+
+    private static final int REQUEST_CODE_WRITE_SETTINGS = 1;
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_WRITE_SETTINGS) {
+            int grantResult = grantResults[0];
+            boolean granted = grantResult == PackageManager.PERMISSION_GRANTED;
+            if (!granted) {
+                ((FloatingActionButton) findViewById(R.id.fab)).hide();
+            }
+        }
     }
 
     @Override
