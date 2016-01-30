@@ -1,9 +1,11 @@
 package com.celery.filedownloader;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.File;
@@ -19,7 +21,7 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
     private FilesAdapter filesAdapter;
     private DownloadManager downloadManager;
 
-    public DownloadTask(FilesAdapter filesAdapter,DownloadManager downloadManager) {
+    public DownloadTask(FilesAdapter filesAdapter, DownloadManager downloadManager) {
         this.filesAdapter = filesAdapter;
         this.downloadManager = downloadManager;
     }
@@ -32,7 +34,7 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
         fileItem.setStatus(FileItem.STATUS_PENDING);
         int position = downloadManager.addFileItem(fileItem);
 
-        if(!isNetworkAvailable()){
+        if (!isNetworkAvailable()) {
             return position;
         }
 
@@ -117,10 +119,19 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
         filesAdapter.notifyItemChanged(i);
     }
 
-    private boolean isNetworkAvailable(){
+    private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) downloadManager.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        return networkInfo!=null && networkInfo.isConnected();
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(downloadManager.getContext());
+        boolean isOnlyWIFI = preferences.getBoolean("prefOnlyWifi", true);
+
+        NetworkInfo networkInfo;
+        if (isOnlyWIFI) {
+            networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        } else {
+            networkInfo = connectivityManager.getActiveNetworkInfo();
+        }
+        return networkInfo != null && networkInfo.isConnected();
     }
 }
 

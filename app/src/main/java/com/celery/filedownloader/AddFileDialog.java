@@ -71,7 +71,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             public void onClick(View v) {
                 System.out.println("btn add click");
 
-                if (fileItem != null && fileItem.IsValid() && !fileItem.exists() && fileItem.getFileSize() != "0") {
+                if (fileItem != null && fileItem.IsValid() && fileItem.getFileSize() != "-2") {
                     AddClickListener clickListener = (AddClickListener) getActivity();
                     clickListener.onAddClick(fileItem);
                     dismiss();
@@ -79,7 +79,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             }
         });
 
-        //etUrl.setText("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk");
+        etUrl.setText("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk");
         String urlStr = etUrl.getText().toString();
         if (urlStr != "") {
             getFileItem(urlStr);
@@ -107,11 +107,11 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
 
             etAddFileName.setText(fileItem.getFileName());
 
-            if (fileItem.exists()) {
-                tvFileSize.setText("(File already exist.)");
-            } else {
-                new HttpTask().execute(fileItem);
-            }
+            //if (fileItem.exists()) {
+            //    tvFileSize.setText("(File already exist.)");
+            //} else {
+            new HttpTask().execute(fileItem);
+            //}
         }
     }
 
