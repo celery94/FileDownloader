@@ -22,6 +22,8 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Add
     FilesAdapter filesAdapter;
     DownloadManager downloadManager;
 
+    public static final int RESULT_SETTINGS = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -91,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Add
             filesAdapter.notifyDataSetChanged();
             return true;
         } else if (id == R.id.action_setting) {
-            startActivityForResult(new Intent(this, SettingsFragment.class), 1);
+            startActivityForResult(new Intent(this, SettingsActivity.class), RESULT_SETTINGS);
         }
 
         return super.onOptionsItemSelected(item);

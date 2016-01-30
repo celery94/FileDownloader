@@ -1,5 +1,8 @@
 package com.celery.filedownloader;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -28,6 +31,10 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
         FileItem fileItem = params[0];
         fileItem.setStatus(FileItem.STATUS_PENDING);
         int position = downloadManager.addFileItem(fileItem);
+
+        if(!isNetworkAvailable()){
+            return position;
+        }
 
         InputStream inputStream = null;
         OutputStream outputStream = null;
@@ -108,6 +115,12 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
     protected void onPostExecute(Integer i) {
         System.out.println("Downloaded and result position: " + i);
         filesAdapter.notifyItemChanged(i);
+    }
+
+    private boolean isNetworkAvailable(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) downloadManager.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        return networkInfo!=null && networkInfo.isConnected();
     }
 }
 

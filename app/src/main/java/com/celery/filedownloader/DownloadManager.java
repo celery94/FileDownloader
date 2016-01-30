@@ -74,4 +74,8 @@ public class DownloadManager {
 
         files = new ArrayList<>();
     }
+
+    public Context getContext() {
+        return context;
+    }
 }
