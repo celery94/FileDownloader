@@ -39,7 +39,7 @@ public class DownloadManager {
         if (nameList != null) {
 
             for (String urlString : nameList) {
-
+                System.out.println("restore All FileItems: " + urlString);
                 FileItem fileItem = new FileItem(urlString);
 
                 files.add(fileItem);
@@ -47,22 +47,16 @@ public class DownloadManager {
         }
     }
 
-    private void refreshPref() {
-        SharedPreferences.Editor editor = pref.edit();
-        Set<String> fileNames = new HashSet<>();
-        for (FileItem fileItem : files) {
-            fileNames.add(fileItem.getUrlString());
-        }
-        editor.putStringSet(PREF_KEY, fileNames);
-        editor.commit();
-    }
-
     public int addFileItem(FileItem item) {
-        item.setLastModifyTimeStamp(new Date().getTime());
-
         files.add(item);
 
-        refreshPref();
+        Set<String> nameList = pref.getStringSet(PREF_KEY, null);
+        nameList.add(item.getUrlString());
+        SharedPreferences.Editor editor = pref.edit();
+        editor.putStringSet(PREF_KEY, nameList);
+        editor.commit();
+
+        System.out.println("add File Item and total count is: " + nameList.size());
 
         return files.indexOf(item);
     }

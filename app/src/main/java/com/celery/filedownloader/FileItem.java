@@ -87,10 +87,6 @@ public class FileItem {
         this.status = status;
     }
 
-    public void setLastModifyTimeStamp(long lastModifyTimeStamp) {
-        this.lastModifyTimeStamp = lastModifyTimeStamp;
-    }
-
     public String getLastModifyTimeStamp() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy");
         String string = dateFormat.format(new Date(lastModifyTimeStamp));
