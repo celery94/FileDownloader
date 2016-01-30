@@ -1,6 +1,7 @@
 package com.celery.filedownloader;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -89,6 +90,8 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Add
             downloadManager.clearList();
             filesAdapter.notifyDataSetChanged();
             return true;
+        } else if (id == R.id.action_setting) {
+            startActivityForResult(new Intent(this, SettingsFragment.class), 1);
         }
 
         return super.onOptionsItemSelected(item);

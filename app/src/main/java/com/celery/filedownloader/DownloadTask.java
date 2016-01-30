@@ -26,7 +26,7 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
         System.out.println("DownloadTask doInBackground");
 
         FileItem fileItem = params[0];
-        fileItem.setStatus(FileItem.STATUS_STARTED);
+        fileItem.setStatus(FileItem.STATUS_PENDING);
         int position = downloadManager.addFileItem(fileItem);
 
         InputStream inputStream = null;
@@ -54,6 +54,8 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
             File file = new File(DownloadManager.DL_DIR + fileItem.getFileName());  //TODO check file exist
             Log.d("", "File download start: " + file.getPath());
             file.createNewFile();
+
+            fileItem.setStatus(FileItem.STATUS_STARTED);
 
             outputStream = new FileOutputStream(file);
             byte[] buffer = new byte[1024 * 4];
