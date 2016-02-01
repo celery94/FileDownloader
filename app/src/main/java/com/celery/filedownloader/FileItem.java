@@ -121,7 +121,7 @@ public class FileItem {
         }
     }
 
-    public boolean IsValid() {
+    public boolean isValid() {
         return isValid;
     }
 

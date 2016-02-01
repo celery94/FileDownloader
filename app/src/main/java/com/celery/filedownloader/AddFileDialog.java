@@ -1,5 +1,8 @@
 package com.celery.filedownloader;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -71,7 +74,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             public void onClick(View v) {
                 System.out.println("btn add click");
 
-                if (fileItem != null && fileItem.IsValid() && fileItem.getFileSize() != String.valueOf(FileItem.URL_ERROR)) {
+                if (fileItem != null && fileItem.isValid() && fileItem.getFileSize() != String.valueOf(FileItem.URL_ERROR)) {
                     AddClickListener clickListener = (AddClickListener) getActivity();
                     clickListener.onAddClick(fileItem);
                     dismiss();
@@ -79,10 +82,13 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             }
         });
 
-        etUrl.setText("http://zhstatic.zhihu.com/pkg/store/zhihu/futureve-mobile-zhihu-release-3.0.1(302).apk");
-        String urlStr = etUrl.getText().toString();
-        if (urlStr != "") {
-            getFileItem(urlStr);
+        ClipboardManager clipboardManager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+        ClipData.Item item = clipboardManager.getPrimaryClip().getItemAt(0);
+        CharSequence copiedText = item.getText();
+        if (copiedText != null) {
+            if (getFileItem(copiedText.toString())) {
+                etUrl.setText(copiedText.toString());
+            }
         }
     }
 
@@ -101,13 +107,16 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
         return false;
     }
 
-    private void getFileItem(String urlStr) {
-        fileItem = new FileItem(urlStr);
-        if (fileItem.IsValid()) {
-
+    private boolean getFileItem(String urlStr) {
+        FileItem fItem = new FileItem(urlStr.trim());
+        if (fItem.isValid()) {
+            fileItem = fItem;
             etAddFileName.setText(fileItem.getFileName());
-
             new HttpTask().execute(fileItem);
+
+            return true;
+        } else {
+            return false;
         }
     }
 
