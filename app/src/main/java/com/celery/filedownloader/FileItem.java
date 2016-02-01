@@ -25,7 +25,7 @@ public class FileItem {
     private int status;
     private long lastModifyTimeStamp;
     private String urlString;
-    private File file;
+    private int position;
 
     public String getFileName() {
         return fileName;
@@ -69,7 +69,11 @@ public class FileItem {
         this.fileSize = fileSize;
     }
 
-    public String getStatus() {
+    public int getStatus() {
+        return status;
+    }
+
+    public String getStatusStr() {
         switch (status) {
             case STATUS_ERROR:
                 return "Error";
@@ -103,6 +107,7 @@ public class FileItem {
     public FileItem(String urlString) {
         this.urlString = urlString;
         this.lastModifyTimeStamp = new Date().getTime();
+        this.status = STATUS_PENDING;
 
         validateUrl();
 
@@ -111,15 +116,6 @@ public class FileItem {
             fileName = urlString.substring(urlString.lastIndexOf('/') + 1, urlString.length());
             fileNameWithoutExtension = fileName.substring(0, fileName.lastIndexOf('.'));
             fileExtension = urlString.substring(urlString.lastIndexOf("."));
-            file = new File(DownloadManager.DL_DIR, fileName);
-
-            if (file.exists()) {
-                setFileSize(file.length());
-                setFileSizeDownload(file.length());
-                setStatus(STATUS_COMPLETE);
-            } else {
-                setStatus(STATUS_REMOVED);
-            }
         } else {
             fileName = "";
         }
@@ -151,7 +147,11 @@ public class FileItem {
         this.fileSizeDownload = fileSizeDownload;
     }
 
-    public boolean exists() {
-        return file.exists();
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
     }
 }

@@ -1,11 +1,6 @@
 package com.celery.filedownloader;
 
-import android.content.Context;
-import android.content.SharedPreferences;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.io.File;
@@ -19,11 +14,9 @@ import java.net.URL;
 public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
 
     private FilesAdapter filesAdapter;
-    private DownloadManager downloadManager;
 
-    public DownloadTask(FilesAdapter filesAdapter, DownloadManager downloadManager) {
+    public DownloadTask(FilesAdapter filesAdapter) {
         this.filesAdapter = filesAdapter;
-        this.downloadManager = downloadManager;
     }
 
     @Override
@@ -31,12 +24,6 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
         System.out.println("DownloadTask doInBackground");
 
         FileItem fileItem = params[0];
-        fileItem.setStatus(FileItem.STATUS_PENDING);
-        int position = downloadManager.addFileItem(fileItem);
-
-        if (!isNetworkAvailable()) {
-            return position;
-        }
 
         InputStream inputStream = null;
         OutputStream outputStream = null;
@@ -75,7 +62,7 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
                 outputStream.write(buffer, 0, count);
 
                 fileItem.setFileSizeDownload(total);
-                publishProgress(position);
+                publishProgress(fileItem.getPosition());
             }
 
             Log.d("", "File download complete, size: " + String.valueOf(total / 1024) + " k");
@@ -99,7 +86,7 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
                 conn.disconnect();
         }
 
-        return position;
+        return fileItem.getPosition();
     }
 
     @Override
@@ -117,21 +104,6 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
     protected void onPostExecute(Integer i) {
         System.out.println("Downloaded and result position: " + i);
         filesAdapter.notifyItemChanged(i);
-    }
-
-    private boolean isNetworkAvailable() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) downloadManager.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(downloadManager.getContext());
-        boolean isOnlyWIFI = preferences.getBoolean("prefOnlyWifi", true);
-
-        NetworkInfo networkInfo;
-        if (isOnlyWIFI) {
-            networkInfo = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        } else {
-            networkInfo = connectivityManager.getActiveNetworkInfo();
-        }
-        return networkInfo != null && networkInfo.isConnected();
     }
 }
 

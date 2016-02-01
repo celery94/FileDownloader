@@ -101,6 +101,11 @@ public class MainActivity extends AppCompatActivity implements AddFileDialog.Add
 
     @Override
     public void onAddClick(FileItem fileItem) {
-        new DownloadTask(filesAdapter, downloadManager).execute(fileItem);
+        downloadManager.addFileItem(fileItem);
+        filesAdapter.notifyItemInserted(fileItem.getPosition());
+
+        if (downloadManager.isNetworkAvailable()) {
+            new DownloadTask(filesAdapter).execute(fileItem);
+        }
     }
 }
