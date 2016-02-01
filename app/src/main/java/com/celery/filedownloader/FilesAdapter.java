@@ -82,7 +82,8 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
                     } else if (fileItem.getStatus() == FileItem.STATUS_REMOVED) {
                         //TODO Download again?
                     }else if (fileItem.getStatus() == FileItem.STATUS_STARTED) {
-                        Snackbar.make(v, "Please wait for download complete!", Snackbar.LENGTH_LONG)
+                        fileItem.cancel();
+                        Snackbar.make(v, "File download paused, click again to restart.", Snackbar.LENGTH_LONG)
                                 .show();
                     }
                 }

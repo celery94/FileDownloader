@@ -154,4 +154,56 @@ public class FileItem {
     public void setPosition(int position) {
         this.position = position;
     }
+
+    private OnCancelListener onCancelListener;
+
+    public void setOnCancelListener(OnCancelListener onCancelListener) {
+        this.onCancelListener = onCancelListener;
+    }
+
+    public void cancel() {
+        if (onCancelListener != null) {
+            onCancelListener.onCancel();
+        }
+    }
+
+    public interface OnCancelListener {
+        void onCancel();
+    }
+
+    public String getStoreStr() {
+        return String.valueOf(position) + "," + status + "," + String.valueOf(fileSize) + "," + urlString;
+    }
+
+    public static FileItem createByStoreStr(String storeStr) {
+        try {
+            int index = storeStr.indexOf(",");
+
+            String str = storeStr.substring(index + 1);
+            index = str.indexOf(",");
+            int status = Integer.valueOf(str.substring(0, index));
+
+            str = str.substring(index + 1);
+            index = str.indexOf(",");
+            long fileSize = Long.valueOf(str.substring(0, index));
+
+            String urlString = str.substring(index + 1);
+
+            FileItem fileItem = new FileItem(urlString);
+            fileItem.setStatus(status);
+            fileItem.setFileSize(fileSize);
+
+            File file = new File(DownloadManager.DL_DIR + fileItem.getFileName());
+            if (file.exists()) {
+                fileItem.setFileSizeDownload(file.length());
+            } else {
+                fileItem.setStatus(STATUS_REMOVED);
+            }
+
+            return fileItem;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return null;
+        }
+    }
 }

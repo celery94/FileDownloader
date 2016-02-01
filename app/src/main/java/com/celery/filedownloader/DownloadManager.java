@@ -6,16 +6,17 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class DownloadManager {
-
+    private static final String LOG_TAG = "DownloadManager";
     private static final String PREF_KEY = "FilesList";
+
     public static final String DL_DIR = Environment.getExternalStorageDirectory() + "/Download/";
 
     private List<FileItem> files;
@@ -37,21 +38,11 @@ public class DownloadManager {
     private void restoreAllFileItems() {
 
         Set<String> nameList = pref.getStringSet(PREF_KEY, new HashSet<String>());
-        if (nameList != null) {
 
-            for (String urlString : nameList) {
-                System.out.println("restore All FileItems: " + urlString);
-                FileItem fileItem = new FileItem(urlString);
-
-                File file = new File(DownloadManager.DL_DIR, fileItem.getFileName());
-                if (file.exists()) {
-                    fileItem.setFileSize(file.length());
-                    fileItem.setFileSizeDownload(file.length());
-                    fileItem.setStatus(FileItem.STATUS_COMPLETE);
-                } else {
-                    fileItem.setStatus(FileItem.STATUS_REMOVED);
-                }
-
+        for (String storeStr : nameList) {
+            Log.d(LOG_TAG, "restore file item with store key: "+ storeStr);
+            FileItem fileItem = FileItem.createByStoreStr(storeStr);
+            if (fileItem != null) {
                 files.add(fileItem);
             }
         }
@@ -62,12 +53,10 @@ public class DownloadManager {
         item.setPosition(files.indexOf(item));
 
         Set<String> nameList = pref.getStringSet(PREF_KEY, new HashSet<String>());
-        nameList.add(item.getUrlString());
+        nameList.add(item.getStoreStr());
         SharedPreferences.Editor editor = pref.edit();
         editor.putStringSet(PREF_KEY, nameList);
         editor.commit();
-
-        System.out.println("add File Item and total count is: " + nameList.size());
     }
 
     public void clearList() {

@@ -13,6 +13,8 @@ import java.net.URL;
 
 public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
 
+    private static final String LOG_TAG = "DownloadTask";
+
     private FilesAdapter filesAdapter;
 
     public DownloadTask(FilesAdapter filesAdapter) {
@@ -24,6 +26,14 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
         System.out.println("DownloadTask doInBackground");
 
         FileItem fileItem = params[0];
+
+        final DownloadTask me = this;
+        fileItem.setOnCancelListener(new FileItem.OnCancelListener() {
+            @Override
+            public void onCancel() {
+                me.cancel(true);
+            }
+        });
 
         InputStream inputStream = null;
         OutputStream outputStream = null;
@@ -37,8 +47,8 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
             conn.connect();
 
             int responseCode = conn.getResponseCode();
-            Log.d("", "response code is: " + responseCode);
-            Log.d("", "response content length is: " + conn.getContentLength() / 1024 + " k");
+            Log.d(LOG_TAG, "response code is: " + responseCode);
+            Log.d(LOG_TAG, "response content length is: " + conn.getContentLength() / 1024 + " k");
 
             inputStream = conn.getInputStream();
 
@@ -48,7 +58,7 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
             }
 
             File file = new File(DownloadManager.DL_DIR + fileItem.getFileName());  //TODO check file exist
-            Log.d("", "File download start: " + file.getPath());
+            Log.d(LOG_TAG, "File download start: " + file.getPath());
             file.createNewFile();
 
             fileItem.setStatus(FileItem.STATUS_STARTED);
@@ -63,9 +73,29 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
 
                 fileItem.setFileSizeDownload(total);
                 publishProgress(fileItem.getPosition());
+
+                if (isCancelled()) {
+                    Log.d(LOG_TAG, "doInBackground: task cancelled.");
+                    fileItem.setStatus(FileItem.STATUS_PENDING);
+
+                    try {
+                        if (outputStream != null) {
+                            outputStream.flush();
+                            outputStream.close();
+                        }
+                        if (inputStream != null)
+                            inputStream.close();
+                    } catch (IOException ignored) {
+                    }
+
+                    if (conn != null)
+                        conn.disconnect();
+
+                    return fileItem.getPosition();
+                }
             }
 
-            Log.d("", "File download complete, size: " + String.valueOf(total / 1024) + " k");
+            Log.d(LOG_TAG, "File download complete, size: " + String.valueOf(total / 1024) + " k");
             fileItem.setStatus(FileItem.STATUS_COMPLETE);
             fileItem.setFileSizeDownload(total);
         } catch (Exception e) {
