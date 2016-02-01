@@ -79,7 +79,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             }
         });
 
-        etUrl.setText("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk");
+        //etUrl.setText("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk");
         String urlStr = etUrl.getText().toString();
         if (urlStr != "") {
             getFileItem(urlStr);

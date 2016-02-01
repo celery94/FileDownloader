@@ -8,7 +8,8 @@
         android:id="@+id/tvUrl"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Url" />
+        android:text="Enter File URL:"
+        android:textSize="20sp"/>
 
     <EditText
         android:id="@+id/etUrl"
@@ -26,7 +27,8 @@
             android:id="@+id/tvAddFileName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="File Name" />
+            android:text="File Name:"
+            android:textSize="20sp"/>
 
         <TextView
             android:id="@+id/tvFileSize"
