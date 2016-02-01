@@ -71,7 +71,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             public void onClick(View v) {
                 System.out.println("btn add click");
 
-                if (fileItem != null && fileItem.IsValid() && fileItem.getFileSize() != "-2") {
+                if (fileItem != null && fileItem.IsValid() && fileItem.getFileSize() != String.valueOf(FileItem.URL_ERROR)) {
                     AddClickListener clickListener = (AddClickListener) getActivity();
                     clickListener.onAddClick(fileItem);
                     dismiss();
@@ -79,7 +79,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             }
         });
 
-        //etUrl.setText("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk");
+        etUrl.setText("http://zhstatic.zhihu.com/pkg/store/zhihu/zhihu-android-app-zhihu-release-2.4.4-244.apk");
         String urlStr = etUrl.getText().toString();
         if (urlStr != "") {
             getFileItem(urlStr);
@@ -128,11 +128,13 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
         }
 
         @Override
-        protected void onPostExecute(String s) {
-            if (s == "") {
+        protected void onPostExecute(String result) {
+            System.out.println("HttpTask onPostExecute" + result);
+
+            if (result == String.valueOf(FileItem.URL_ERROR)) {
                 tvFileSize.setText("(Unable to resolve this url.)");
             } else {
-                tvFileSize.setText("(Size: " + s + ")");
+                tvFileSize.setText("(Size: " + result + ")");
             }
         }
 
@@ -154,7 +156,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
                 e.printStackTrace();
             }
 
-            return -2;
+            return FileItem.URL_ERROR;
         }
     }
 }

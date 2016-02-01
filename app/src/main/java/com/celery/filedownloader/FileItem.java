@@ -14,6 +14,9 @@ public class FileItem {
     public static final int STATUS_PENDING = 2;
     public static final int STATUS_REMOVED = 3;
 
+    public static final int URL_SIZE_UNKNOWN = -1;
+    public static final int URL_ERROR = -2;
+
     private String fileName;
     private String fileExtension;
     private String fileNameWithoutExtension;
@@ -29,17 +32,17 @@ public class FileItem {
     }
 
     public String getFileSize() {
-        if (fileSize == -1) {
+        if (fileSize == URL_SIZE_UNKNOWN) {
             return "Unknown";
-        } else if (fileSize == -2) {    //means url incorrect
-            return "";
+        } else if (fileSize == URL_ERROR || fileSize == 0) {    //means url incorrect
+            return String.valueOf(URL_ERROR);
         } else {
             return formatSize(fileSize);
         }
     }
 
     public String getFileSizeDownload() {
-        if (fileSize == -1) {
+        if (fileSize == URL_SIZE_UNKNOWN) {
             return formatSize(fileSizeDownload);
         } else if (fileSize == fileSizeDownload) {
             return formatSize(fileSize);
@@ -148,7 +151,7 @@ public class FileItem {
         this.fileSizeDownload = fileSizeDownload;
     }
 
-    public boolean exists(){
+    public boolean exists() {
         return file.exists();
     }
 }
