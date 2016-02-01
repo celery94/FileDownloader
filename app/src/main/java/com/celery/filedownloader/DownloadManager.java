@@ -35,7 +35,7 @@ public class DownloadManager {
 
     private void restoreAllFileItems() {
 
-        Set<String> nameList = pref.getStringSet(PREF_KEY, null);
+        Set<String> nameList = pref.getStringSet(PREF_KEY, new HashSet<String>());
         if (nameList != null) {
 
             for (String urlString : nameList) {
@@ -50,7 +50,7 @@ public class DownloadManager {
     public int addFileItem(FileItem item) {
         files.add(item);
 
-        Set<String> nameList = pref.getStringSet(PREF_KEY, null);
+        Set<String> nameList = pref.getStringSet(PREF_KEY, new HashSet<String>());
         nameList.add(item.getUrlString());
         SharedPreferences.Editor editor = pref.edit();
         editor.putStringSet(PREF_KEY, nameList);
