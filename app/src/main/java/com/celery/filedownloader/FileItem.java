@@ -190,12 +190,16 @@ public class FileItem {
             String urlString = str.substring(index + 1);
 
             FileItem fileItem = new FileItem(urlString);
-            fileItem.setStatus(status);
             fileItem.setFileSize(fileSize);
 
             File file = new File(DownloadManager.DL_DIR + fileItem.getFileName());
             if (file.exists()) {
                 fileItem.setFileSizeDownload(file.length());
+                if (fileSize == file.length()) {
+                    fileItem.setStatus(STATUS_COMPLETE);
+                } else {
+                    fileItem.setStatus(STATUS_PENDING);
+                }
             } else {
                 fileItem.setStatus(STATUS_REMOVED);
             }
@@ -205,5 +209,9 @@ public class FileItem {
             ex.printStackTrace();
             return null;
         }
+    }
+
+    public boolean exists() {
+        return new File(DownloadManager.DL_DIR + fileName).exists();
     }
 }

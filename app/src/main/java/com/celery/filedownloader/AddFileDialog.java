@@ -43,15 +43,12 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        System.out.println("onCreateView");
-
         return inflater.inflate(R.layout.fragment_add_file, container);
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        System.out.println("onViewCreated");
 
         etUrl = (EditText) view.findViewById(R.id.etUrl);
         etAddFileName = (EditText) view.findViewById(R.id.etAddFileName);
@@ -72,9 +69,11 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
         btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                System.out.println("btn add click");
-
                 if (fileItem != null && fileItem.isValid() && fileItem.getFileSize() != String.valueOf(FileItem.URL_ERROR)) {
+                    if(fileItem.exists()){
+
+                    }
+
                     AddClickListener clickListener = (AddClickListener) getActivity();
                     clickListener.onAddClick(fileItem);
                     dismiss();
