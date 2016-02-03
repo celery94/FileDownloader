@@ -1,5 +1,6 @@
 package com.celery.filedownloader;
 
+import android.content.Context;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,12 +10,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import java.io.IOException;
+
 public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> {
 
     private DownloadManager downloadManager;
+    protected Context context;
 
     public FilesAdapter(DownloadManager downloadManager) {
         this.downloadManager = downloadManager;
+        this.context = downloadManager.getContext();
     }
 
     @Override
@@ -26,7 +31,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         FileItem item = downloadManager.getFiles().get(i);
-        viewHolder.bindFileItem(item, this);
+        viewHolder.bindFileItem(item, this, context);
     }
 
     @Override
@@ -59,7 +64,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
             layoutFileItem = (LinearLayout) itemView.findViewById(R.id.llFileItem);
         }
 
-        public void bindFileItem(FileItem item, final FilesAdapter filesAdapter) {
+        public void bindFileItem(FileItem item, final FilesAdapter filesAdapter, final Context context) {
             fileItem = item;
 
             tvFileName.setText(item.getFileName());
@@ -71,7 +76,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
                 @Override
                 public void onClick(View v) {
                     if (fileItem.getStatus() == FileItem.STATUS_COMPLETE) {
-                        //TODO Open File
+                        FileUtil.openFile(context, DownloadManager.DL_DIR + fileItem.getFileName());
                     } else if (fileItem.getStatus() == FileItem.STATUS_PENDING) {
                         if (downloadManager.isNetworkAvailable()) {
                             new DownloadTask(filesAdapter).execute(fileItem);
@@ -81,7 +86,7 @@ public class FilesAdapter extends RecyclerView.Adapter<FilesAdapter.ViewHolder> 
                         }
                     } else if (fileItem.getStatus() == FileItem.STATUS_REMOVED) {
                         //TODO Download again?
-                    }else if (fileItem.getStatus() == FileItem.STATUS_STARTED) {
+                    } else if (fileItem.getStatus() == FileItem.STATUS_STARTED) {
                         fileItem.cancel();
                         Snackbar.make(v, "File download paused, click again to restart.", Snackbar.LENGTH_LONG)
                                 .show();
