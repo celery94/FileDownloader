@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -149,8 +150,6 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
 
         @Override
         protected void onPostExecute(String result) {
-            System.out.println("HttpTask onPostExecute" + result);
-
             if (result == String.valueOf(FileItem.URL_ERROR)) {
                 tvFileSize.setText("(Unable to resolve this url.)");
             } else {
@@ -165,7 +164,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
 
                 int contentLength = connection.getContentLength();
 
-                System.out.println("get file(" + url.getPath() + ") size result:" + contentLength);
+                Log.d("HttpTask", "get file(" + url.getPath() + ") size result:" + contentLength);
                 return contentLength;
 
             } catch (MalformedURLException e) {

@@ -46,6 +46,10 @@ public class FileItem {
         }
     }
 
+    public long getFileLength(){
+        return fileSize;
+    }
+
     public String getFileSizeDownload() {
         if (fileSize == URL_SIZE_UNKNOWN) {
             return formatSize(fileSizeDownload);
