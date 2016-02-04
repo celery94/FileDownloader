@@ -4,10 +4,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
@@ -23,8 +22,6 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
 
     @Override
     protected Integer doInBackground(FileItem... params) {
-        System.out.println("DownloadTask doInBackground");
-
         FileItem fileItem = params[0];
 
         final DownloadTask me = this;
@@ -36,66 +33,68 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
         });
 
         InputStream inputStream = null;
-        OutputStream outputStream = null;
         HttpURLConnection conn = null;
-        long total = 0;
+        RandomAccessFile randomAccessFile = null;
 
         try {
-
-            URL url = fileItem.getUrl();
-            conn = (HttpURLConnection) url.openConnection();
-            conn.connect();
-
-            int responseCode = conn.getResponseCode();
-            Log.d(LOG_TAG, "response code is: " + responseCode);
-            Log.d(LOG_TAG, "response content length is: " + conn.getContentLength() / 1024 + " k");
-
-            inputStream = conn.getInputStream();
-
             File dir = new File(DownloadManager.DL_DIR);
             if (!dir.exists()) {
                 dir.mkdir();
             }
 
-            File file = new File(DownloadManager.DL_DIR + fileItem.getFileName());  //TODO check file exist
-            Log.d(LOG_TAG, "File download start: " + file.getPath());
-            file.createNewFile();
+            File file = new File(DownloadManager.DL_DIR + fileItem.getFileName());
+            if (!file.exists()) {
+                file.createNewFile();
+            } else {
+                Log.d(LOG_TAG, "file exist and length is: " + file.length());
+            }
+
+            URL url = fileItem.getUrl();
+            conn = (HttpURLConnection) url.openConnection();
+
+            long total = fileItem.getFileLength() == file.length() ? 0 : file.length();
+            if (total != 0) {
+                conn.setRequestProperty("RANGE", "bytes=" + total + "-");
+            }
+
+            conn.connect();
+            Log.d(LOG_TAG, "response code is: " + conn.getResponseCode() + " and content length is: " + conn.getContentLength());
+
+            inputStream = conn.getInputStream();
 
             fileItem.setStatus(FileItem.STATUS_STARTED);
 
-            outputStream = new FileOutputStream(file);
+            randomAccessFile = new RandomAccessFile(file, "rw");
+            randomAccessFile.seek(total);
+            Log.d(LOG_TAG, "RandomAccessFile start at: " + total);
+
             byte[] buffer = new byte[1024 * 4];
             int count;
             while ((count = inputStream.read(buffer)) != -1) {
                 total += count;
 
-                outputStream.write(buffer, 0, count);
+                randomAccessFile.write(buffer, 0, count);
 
                 fileItem.setFileSizeDownload(total);
                 publishProgress(fileItem.getPosition());
 
                 if (isCancelled()) {
-                    Log.d(LOG_TAG, "doInBackground: task cancelled.");
+                    Log.d(LOG_TAG, "doInBackground: task cancelled in length:" + total);
                     fileItem.setStatus(FileItem.STATUS_PENDING);
 
                     try {
-                        if (outputStream != null) {
-                            outputStream.flush();
-                            outputStream.close();
-                        }
-                        if (inputStream != null)
-                            inputStream.close();
+                        randomAccessFile.close();
+                        inputStream.close();
                     } catch (IOException ignored) {
                     }
 
-                    if (conn != null)
-                        conn.disconnect();
+                    conn.disconnect();
 
                     return fileItem.getPosition();
                 }
             }
 
-            Log.d(LOG_TAG, "File download complete, size: " + String.valueOf(total / 1024) + " k");
+            Log.d(LOG_TAG, "File download complete, size: " + total);
             fileItem.setStatus(FileItem.STATUS_COMPLETE);
             fileItem.setFileSizeDownload(total);
         } catch (Exception e) {
@@ -103,17 +102,18 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
             fileItem.setStatus(FileItem.STATUS_ERROR);
         } finally {
             try {
-                if (outputStream != null) {
-                    outputStream.flush();
-                    outputStream.close();
+                if (randomAccessFile != null) {
+                    randomAccessFile.close();
                 }
-                if (inputStream != null)
+                if (inputStream != null) {
                     inputStream.close();
+                }
             } catch (IOException ignored) {
             }
 
-            if (conn != null)
+            if (conn != null) {
                 conn.disconnect();
+            }
         }
 
         return fileItem.getPosition();
@@ -121,7 +121,6 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
 
     @Override
     protected void onPreExecute() {
-        System.out.println("onPreExecute");
         filesAdapter.notifyDataSetChanged();
     }
 
@@ -132,7 +131,6 @@ public class DownloadTask extends AsyncTask<FileItem, Integer, Integer> {
 
     @Override
     protected void onPostExecute(Integer i) {
-        System.out.println("Downloaded and result position: " + i);
         filesAdapter.notifyItemChanged(i);
     }
 }
