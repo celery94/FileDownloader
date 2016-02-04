@@ -70,7 +70,7 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             @Override
             public void onClick(View v) {
                 if (fileItem != null && fileItem.isValid() && fileItem.getFileSize() != String.valueOf(FileItem.URL_ERROR)) {
-                    if(fileItem.exists()){
+                    if (fileItem.exists()) {
 
                     }
 
@@ -81,13 +81,25 @@ public class AddFileDialog extends DialogFragment implements TextView.OnEditorAc
             }
         });
 
-        ClipboardManager clipboardManager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-        ClipData.Item item = clipboardManager.getPrimaryClip().getItemAt(0);
-        CharSequence copiedText = item.getText();
-        if (copiedText != null) {
-            if (getFileItem(copiedText.toString())) {
-                etUrl.setText(copiedText.toString());
+        String copiedText = getCopiedText();
+        if (copiedText != "") {
+            if (getFileItem(copiedText)) {
+                etUrl.setText(copiedText);
             }
+        }
+    }
+
+    private String getCopiedText() {
+        try {
+            ClipboardManager clipboardManager = (ClipboardManager) getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
+            if (clipboardManager.getPrimaryClip() == null) return "";
+
+            ClipData.Item item = clipboardManager.getPrimaryClip().getItemAt(0);
+            return item.getText().toString();
+        }
+        catch (Exception ex){
+            ex.printStackTrace();
+            return "";
         }
     }
 
